@@ -1,3 +1,4 @@
+import re
 from functools import reduce
 from textnode import *
 from leafnode import LeafNode
@@ -28,3 +29,21 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
                                     ] if n.text.find(delimiter) >= 0 else [n],
                                     old_nodes)), []
                 )
+
+def extract_markdown_links(text):
+    return list(map(
+        lambda l: (l[0], l[1]),
+        map(
+        lambda s: s.strip("[)").split("]("),
+        re.findall(r"(?<!!)\[.*?\]\(.*?\)", text)
+        )
+    ))
+
+def extract_markdown_images(text):
+    return list(map(
+        lambda l: (l[0], l[1]),
+        map(
+        lambda s: s.strip("![)").split("]("),
+        re.findall(r"!\[.*?\]\(.*?\)", text)
+        )
+    ))

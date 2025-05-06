@@ -1,5 +1,5 @@
 import unittest
-from conversion import textnode_to_htmlnode, split_nodes_delimiter
+from conversion import *
 from textnode import *
 from leafnode import LeafNode
 
@@ -89,3 +89,18 @@ class TestSplitNode(unittest.TestCase):
             split_nodes_delimiter(split_nodes_delimiter([node, node2, node3], "_", TextType.ITALIC), "**", TextType.BOLD),
             split_nodes_delimiter(split_nodes_delimiter([node, node2, node3], "**", TextType.BOLD), "_", TextType.ITALIC)
         )
+    
+class TestExtractMarkdown(unittest.TestCase):
+    def test_extract_image(self):
+        text = "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)"
+        self.assertEqual([("image", "https://i.imgur.com/zjjcJKZ.png")], extract_markdown_images(text))
+    
+    def test_extract_link(self):
+        text = "This is text with a [link](https://www.boot.dev)"
+        text2 = "[Link](https://www.boot.dev) at the start of the text"
+        self.assertEqual(extract_markdown_links(text), [("link", "https://www.boot.dev")])
+        self.assertEqual(extract_markdown_links(text2), [("Link", "https://www.boot.dev")])
+    
+    def test_link_dont_match_image(self):
+        text = "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)"
+        self.assertEqual(extract_markdown_links(text), [])

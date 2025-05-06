@@ -1,5 +1,5 @@
 import unittest
-from main import textnode_to_htmlnode
+from conversion import textnode_to_htmlnode
 from textnode import *
 from leafnode import LeafNode
 
@@ -33,3 +33,10 @@ class TestMain(unittest.TestCase):
         node = TextNode("an image", TextType.IMAGE, "img.png")
         leafnode = textnode_to_htmlnode(node)
         self.assertEqual(leafnode.to_html(), '<img src="img.png" alt="an image"></img>')
+    
+    def test_no_texttype(self):
+        node = TextNode("what?", None)
+        with self.assertRaises(ValueError) as cm:
+            textnode_to_htmlnode(node)
+        
+        self.assertEqual(str(cm.exception), "invalid text type!")

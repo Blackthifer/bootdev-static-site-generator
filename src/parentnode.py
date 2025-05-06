@@ -11,4 +11,7 @@ class ParentNode(HTMLNode):
         if not self.children:
             raise ValueError("Parent node needs children!")
         return f"<{self.tag}{self.props_to_html()}>{reduce(lambda a, n: a + n.to_html(), self.children, "")}</{self.tag}>"
+    
+    def __repr__(self):
+        return f"ParentNode({self.tag}, {self.value}, {self.children}, {self.props})"
         

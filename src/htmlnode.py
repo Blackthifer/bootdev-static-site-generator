@@ -12,7 +12,7 @@ class HTMLNode:
     
     def props_to_html(self):
         if self.props == None:
-            return None
+            return ""
         return reduce(lambda a, k: a + f' {k}="{self.props[k]}"', self.props, "")
     
     def __repr__(self):

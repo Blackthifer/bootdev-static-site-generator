@@ -67,6 +67,39 @@ class TestTextToHTML(unittest.TestCase):
                           TextNode(" in it", TextType.ITALIC),
                           TextNode(" text", TextType.NORMAL)
                           ])
+    
+    def test_md_to_blocks(self):
+        md = """
+This is **bolded** paragraph
+
+This is another paragraph with _italic_ text and `code` here
+This is the same paragraph on a new line
+
+- This is a list
+- with items"""
+        self.assertEqual(markdown_to_blocks(md),
+                        ["This is **bolded** paragraph",
+                         "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                         "- This is a list\n- with items"]
+                        )
+    
+    def test_to_block_extra_whitespace(self):
+        md = """
+
+        First paragraph              
+        Multiline           
+
+        Second paragraph         
+
+
+        Third paragraph          
+
+        """
+        self.assertEqual(markdown_to_blocks(md),
+                         ["First paragraph\nMultiline",
+                          "Second paragraph",
+                          "Third paragraph"]
+                        )
 
 class TestSplitNode(unittest.TestCase):
     def test_bold(self):

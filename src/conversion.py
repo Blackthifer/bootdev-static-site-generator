@@ -20,6 +20,17 @@ def textnode_to_htmlnode(textnode):
         case _:
             raise ValueError("invalid text type!")
         
+def text_to_textnodes(text):
+    delimiter_pos_list = [(text.find("_"), "_", TextType.ITALIC),
+                          (text.find("**"), "**", TextType.BOLD),
+                          (text.find("`"), "`", TextType.CODE)
+                         ]
+    list_sorted = sorted(delimiter_pos_list, key=(lambda x: x[0]))
+    nodes = [TextNode(text, TextType.NORMAL)]
+    for tuple in list_sorted:
+        nodes = split_nodes_delimiter(nodes, tuple[1], tuple[2])
+    return split_nodes_image(split_nodes_link(nodes))
+        
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     def split_single_node(node):
         regex = "" 
@@ -56,29 +67,59 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
                 )
 
 def extract_markdown_links(text):
-    return list(map(
-        lambda l: (l[0], l[1]),
-        map(
-        lambda s: s.strip("[)").split("]("),
-        re.findall(r"(?<!!)\[.*?\]\(.*?\)", text)
-        )
-    ))
+    return re.findall(r"(?<!!)\[(.*?)\]\((.*?)\)", text)
 
 def extract_markdown_images(text):
-    return list(map(
-        lambda l: (l[0], l[1]),
-        map(
-        lambda s: s.strip("![)").split("]("),
-        re.findall(r"!\[.*?\]\(.*?\)", text)
-        )
-    ))
+    return re.findall(r"!\[(.*?)\]\((.*?)\)", text)
 
 def split_nodes_image(old_nodes):
     def split_single_node(node):
         matches = extract_markdown_images(node.text)
-    pass
+        if matches == []:
+            return [node]
+        new_nodes = []
+        text = node.text
+        for match in matches:
+            full_match = f"![{match[0]}]({match[1]})"
+            match_pos = text.find(full_match)
+            match_length = len(full_match)
+            if match_pos == 0:
+                new_nodes += [TextNode(match[0], TextType.IMAGE, match[1])]
+                text = text[match_length:]
+            else:
+                new_nodes += [TextNode(text[:match_pos], node.text_type), TextNode(match[0], TextType.IMAGE, match[1])]
+                text = text[match_pos + match_length:]
+        if len(text) > 0:
+            new_nodes += [TextNode(text, node.text_type)]
+        return new_nodes
+
+    return reduce(lambda a, l: a + l,
+                  list(map(lambda n: split_single_node(n), old_nodes)),
+                  []
+                )
 
 def split_nodes_link(old_nodes):
     def split_single_node(node):
         matches = extract_markdown_links(node.text)
-    pass
+        if matches == []:
+            return [node]
+        new_nodes = []
+        text = node.text
+        for match in matches:
+            full_match = f"[{match[0]}]({match[1]})"
+            match_pos = text.find(full_match)
+            match_length = len(full_match)
+            if match_pos == 0:
+                new_nodes += [TextNode(match[0], TextType.LINK, match[1])]
+                text = text[match_length:]
+            else:
+                new_nodes += [TextNode(text[:match_pos], node.text_type), TextNode(match[0], TextType.LINK, match[1])]
+                text = text[match_pos + match_length:]
+        if len(text) > 0:
+            new_nodes += [TextNode(text, node.text_type)]
+        return new_nodes
+    
+    return reduce(lambda a, l: a + l,
+                  list(map(lambda n: split_single_node(n), old_nodes)),
+                  []
+                )

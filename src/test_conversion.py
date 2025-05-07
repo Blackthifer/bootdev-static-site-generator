@@ -71,6 +71,10 @@ class TestSplitNode(unittest.TestCase):
                                                                                             TextNode("text including ", TextType.NORMAL),
                                                                                             TextNode("bold", TextType.BOLD),
                                                                                             TextNode(" text again", TextType.NORMAL)])
+        
+    def test_delimiter_at_ends(self):
+        node = TextNode("**bold text in normal node**", TextType.NORMAL)
+        self.assertEqual(split_nodes_delimiter([node], "**", TextType.BOLD), [TextNode("bold text in normal node", TextType.BOLD)])
     
     def test_nested(self):
         node = TextNode("italic text including **bold** text", TextType.ITALIC)

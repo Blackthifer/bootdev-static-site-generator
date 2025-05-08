@@ -37,10 +37,19 @@ def generate_page(from_path, template_path, dest_path):
     with open(dest_path, "w") as dest:
         dest.write(complete_html)
 
+def generate_pages_r(content_dir, template_path, dest_dir):
+    if os.path.isfile(content_dir):
+        generate_page(content_dir, template_path, dest_dir.replace(".md", ".html"))
+    elif os.path.exists(content_dir):
+        sub_dirs = os.listdir(content_dir)
+        join = os.path.join
+        for dir in sub_dirs:
+            generate_pages_r(join(content_dir, dir), template_path, join(dest_dir, dir))
+
 def main():
     print("Hi")
     copy_static_resources("static", "public")
-    generate_page("content/index.md", "template.html", "public/index.html")
+    generate_pages_r("content", "template.html", "public")
 
 
 main()

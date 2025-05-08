@@ -17,6 +17,13 @@ def text_to_textnodes(text):
         nodes = split_nodes_delimiter(nodes, tuple[1], tuple[2])
     return split_nodes_image(split_nodes_link(nodes))
 
+def extract_title(markdown):
+    blocks = markdown_to_blocks(markdown)
+    for block in blocks:
+        if block.startswith("# "):
+            return block[1:].strip()
+    raise Exception("Header not found")
+
 def markdown_to_blocks(markdown):
     lines = markdown.split("\n")
     blocks = []

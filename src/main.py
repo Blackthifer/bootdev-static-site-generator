@@ -32,7 +32,8 @@ def generate_page(from_path, template_path, dest_path, base_path):
             template = templ.read()
     title = extract_title(markdown)
     generated_html = markdown_to_html_node(markdown).to_html()
-    complete_html = template.replace("{{ Title }}", title).replace("{{ Content }}", generated_html).replace('href="/', f'href="{base_path}').replace('src="/', f'src="{base_path}')
+    complete_html = template.replace("{{ Title }}", title).replace("{{ Content }}", generated_html)
+    complete_html = complete_html.replace('href="/', f'href="{base_path}').replace('src="/', f'src="{base_path}')
     if not os.path.exists(os.path.dirname(dest_path)):
         os.makedirs(os.path.dirname(dest_path))
     with open(dest_path, "w") as dest:
@@ -53,7 +54,7 @@ def main():
     if len(cli_args) > 1:
         basepath = cli_args[1]
     print("Hi")
-    copy_static_resources("static", "public")
-    generate_pages_r("content", "template.html", "public", basepath)
+    copy_static_resources("static", "docs")
+    generate_pages_r("content", "template.html", "docs", basepath)
 
 main()

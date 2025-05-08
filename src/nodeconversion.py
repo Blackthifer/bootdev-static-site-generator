@@ -25,11 +25,11 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
         regex = "" 
         match delimiter:
             case "_":
-                regex = r"(?<!\S)_.+?_(?!\S)"
+                regex = r"_.+?_"
             case "**":
-                regex = r"(?<!\S)\*\*.+?\*\*(?!\S)"
+                regex = r"\*\*.+?\*\*"
             case "`":
-                regex = r"(?<!\S)`.+?`(?!\S)"
+                regex = r"`.+?`"
             case _:
                 return [node]
         matches = re.findall(regex, node.text)

@@ -72,12 +72,12 @@ def block_to_quote(block):
 def block_to_unordered_list(block):
     items = block.split("\n")
     items = list(map(lambda l: l[1:].lstrip(), items))
-    return ParentNode("ul", reduce(lambda a, i: a + [ParentNode("il", text_to_children(i))], items, []))
+    return ParentNode("ul", reduce(lambda a, i: a + [ParentNode("li", text_to_children(i))], items, []))
 
 def block_to_ordered_list(block):
     items = block.split("\n")
     items = list(map(lambda l: l[2:].lstrip(), items))
-    return ParentNode("ol", reduce(lambda a, i: a + [ParentNode("il", text_to_children(i))], items, []))
+    return ParentNode("ol", reduce(lambda a, i: a + [ParentNode("li", text_to_children(i))], items, []))
 
 def text_to_children(text):
     return reduce(lambda a, n: a + [textnode_to_htmlnode(n)], text_to_textnodes(text), [])
